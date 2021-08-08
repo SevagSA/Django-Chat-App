@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Join a public chat room by entering its name, or create one by typing the name you want your new room to have!</h3>
+
+<input id="room-name-input" type="text" size="100">
+<input id="room-name-submit" type="button" value="Enter">
+
+<br>
+<br>
+
+<a href="{% url 'chat:char_room_list' %}"><button>See a list of all public chat rooms!</button></a>
+
+<br>
+<br>
+<a href="{% url 'chat:private_room_selector' %}"><button>Create a private chat room here!</button></a>
+<br>
+<br>
+
+<a href="{% url 'chat:private_room_list' %}"><button>See a list of your private chat rooms here!</button></a>
+
+<script>
+    document.getElementById('room-name-input').focus();
+    document.getElementById('room-name-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.getElementById('room-name-submit').click();
+        }
+    };
+
+    document.getElementById('room-name-submit').onclick = function(e) {
+        var roomName = document.getElementById('room-name-input').value;
+        window.location.pathname = '/room/' + roomName + '/';
+    };
+</script>
+
+
+{% endblock content %}

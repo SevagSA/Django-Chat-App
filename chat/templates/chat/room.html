@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    #chat-log {
+        display:flex;
+        margin: auto;
+        flex-direction: column;
+        width: 1200px;
+        height: 700px;
+        border: 1px solid;
+        overflow: scroll
+    }
+
+    img {
+        max-width: 430px;
+        height: 300px
+    }
+</style>
+
+<div id="chat-log"></div><br>
+
+<form id="message-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+        {{field}}
+    {% endfor %}
+    <input id="chat-message-btn" type="submit" value="Send">
+</form>
+
+{{ room_name|json_script:"room-name" }}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + roomName
+        + '/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === "previous_messages") {
+            msgs = JSON.parse(data.messages)
+            msgs.forEach(e => appendMessageToChat(e.fields))
+        } else {
+            // appendMessageToChat(data.message)
+        }
+    };
+
+    function appendMessageToChat(fields) {
+        msg = document.createElement("p")
+        msg.textContent = fields.message;
+        msg.style.backgroundColor = "grey";
+        document.getElementById('chat-log').appendChild(msg);
+        if (fields.message_media !== "") {
+            const img = document.createElement('img');
+            img.setAttribute('src', "/media/" + fields.message_media)
+            document.getElementById('chat-log').appendChild(img);
+        }
+    }
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.getElementById('id_message').focus();
+    document.getElementById('id_message').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.getElementById('chat-message-btn').click();
+        }
+    };
+
+    document.getElementById('message-form').onsubmit = function(e) {
+        e.preventDefault()
+        const messageInputDom = document.getElementById('id_message');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        document.getElementById('message-form').submit();
+    //     fetch("{#% url 'chat:room' room_name %#}", {
+    //         method: "POST",
+    //         "Content-Type": "application/json",
+    //         Accept: "application/json",
+    //         headers: {'X-CSRFToken':csrftoken},
+    //         body: {
+    //             sender: '{{request.user.id}}',
+    //             chat_room: roomName,
+    //             message: message,
+    //             media: ''
+    //         }
+    //     })
+    //         .then(response => console.log(response))
+    };
+</script>
+
+{% endblock content %}

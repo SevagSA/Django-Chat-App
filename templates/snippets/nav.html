@@ -1,0 +1,14 @@
+<nav>
+    <ul>
+        <li><a href="{% url 'chat:home' %}">Home</a></li>
+        <li><a href="{% url 'account:login' %}">Login</a></li>
+        <li><a href="{% url  'account:register' %}">Register new account</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url  'account:update' %}">Edit profile</a></li>
+            <li><a href="{% url  'account:logout' %}">Logout</a></li>
+            <li>You are {{user}}</li>
+        {% else %}
+            <li><a href="{% url  'account:login' %}">You are not logged in. Please login to chat.</a></li>
+        {% endif %}
+    </ul>
+</nav>

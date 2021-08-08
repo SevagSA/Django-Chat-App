@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'account/css/profile_page.css' %}">
+{% endblock head %}
+{% block content %}
+    {% if user.email == profile_user.email %}
+      <h2>Your profile page</h2>
+    {% else %}
+      <h2>{{profile_user.email}}'s profile page</h2>
+    {% endif %}
+
+    <ul>
+        <li>Email: {{profile_user.email}}</li>
+        <li>First Name: {{profile_user.first_name}}</li>
+        <li>Last Name: {{profile_user.last_name}}</li>
+    </ul>
+{% endblock content %}

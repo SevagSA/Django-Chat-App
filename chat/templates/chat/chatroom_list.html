@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+
+<ul>
+    {% for room in rooms %}
+    <li><a href="{% url 'chat:room' room %}">{{room}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock content %}

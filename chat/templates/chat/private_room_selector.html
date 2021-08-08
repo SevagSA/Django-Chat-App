@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Select a user, or users to create a private chat with.</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <br>
+        <input type="submit" value="Create Private Chat">
+    </form>
+
+<ul>
+    {% for user in users  %}
+        <input type="checkbox" id="{user.id}" name="{{user.email}}" value="{{user.email}}">
+        <label for="{{user.email}}"> {{user.email}}</label><br>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

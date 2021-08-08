@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock title %} Chat App</title>
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}"> -->
+    {% block head %}{% endblock head %}
+</head>
+<body>
+    {% include "snippets/nav.html" %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block content %}
+    {% endblock content %}
+</body>
+</html>
